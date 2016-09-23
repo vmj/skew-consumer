@@ -1,0 +1,3 @@
+rootProject.name = 'consumer'
+include 'skew-consumer'
+include 'skew-consumer-app'

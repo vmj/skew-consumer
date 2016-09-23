@@ -1,0 +1,84 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:3.0.3'
+    }
+}
+
+group 'fi.linuxbox.skew'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'com.bmuschko.docker-remote-api'
+
+mainClassName = 'fi.linuxbox.skew.consumer.app.Boot'
+
+sourceCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    runtime project(':skew-consumer')
+
+    compile 'org.apache.openwebbeans:openwebbeans-spi:1.7.0'
+    compile 'org.apache.openwebbeans:openwebbeans-impl:1.7.0'
+
+    compile 'org.slf4j:slf4j-api:1.7.21'
+    runtime 'ch.qos.logback:logback-classic:1.1.7'
+
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+}
+
+docker {
+    url
+}
+
+import com.bmuschko.gradle.docker.tasks.container.*
+import com.bmuschko.gradle.docker.tasks.image.*
+
+def resin = project.hasProperty('resin')
+
+task dockerfile(type: Dockerfile) {
+    destFile = file("$buildDir/dockerfile/Dockerfile")
+
+    from (resin ? 'resin/raspberrypi3-alpine' : 'openjdk:7-jre-alpine')
+
+    maintainer 'Mikko Värri "vmj@linuxbox.fi"'
+
+    // Install openjdk7-jre (a no-op on openjdk:* base image, but needed on resin base image).
+    // The start script produced by Gradle contains Bashism, so install that too.
+    runCommand 'apk add --update bash openjdk7-jre && rm -rf /var/cache/apk/*'
+
+    addFile "${tasks.distTar.archiveName}", '/'
+
+    defaultCommand '/bin/bash', "/${project.name}-${project.version}/bin/${project.name}"
+}
+
+task dockerResources(type: Sync) {
+    from distTar, dockerfile
+    into "$buildDir/docker/"
+}
+
+task dockerImage(type: DockerBuildImage) {
+    dependsOn dockerResources
+
+    inputDir = dockerResources.destinationDir
+    tag = "vmj0/skew-consumer:latest"
+}
+
+task dockerContainer(type: DockerCreateContainer) {
+    dependsOn dockerImage
+    targetImageId { dockerImage.getImageId() }
+    portBindings = []
+}
+
+task dockerRun(type: DockerStartContainer) {
+    dependsOn dockerContainer
+    targetContainerId { dockerContainer.getContainerId() }
+}
