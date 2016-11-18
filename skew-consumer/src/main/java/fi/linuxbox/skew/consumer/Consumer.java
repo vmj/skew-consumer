@@ -48,7 +48,7 @@ public class Consumer implements Runnable {
         try {
             responseProducer.stop();
         } catch (final Exception e) {
-            log.error("stop response procuder exception: " + e.getMessage(), e);
+            log.error("stop response producer exception: " + e.getMessage(), e);
         }
     }
 
