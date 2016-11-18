@@ -51,13 +51,13 @@ task dockerfile(type: Dockerfile) {
 
     maintainer 'Mikko Värri "vmj@linuxbox.fi"'
 
-    // Install openjdk7-jre (a no-op on openjdk:* base image, but needed on resin base image).
-    // The start script produced by Gradle contains Bashism, so install that too.
-    runCommand 'apk add --update bash openjdk7-jre && rm -rf /var/cache/apk/*'
+    if (resin) {
+      runCommand 'apk add --update openjdk7-jre && rm -rf /var/cache/apk/*'
+    }
 
     addFile "${tasks.distTar.archiveName}", '/'
 
-    defaultCommand '/bin/bash', "/${project.name}-${project.version}/bin/${project.name}"
+    defaultCommand "/${project.name}-${project.version}/bin/${project.name}"
 }
 
 task dockerResources(type: Sync) {
