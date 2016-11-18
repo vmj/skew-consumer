@@ -23,12 +23,4 @@ public class EndpointProducer {
     public Endpoint responses() {
         return camelContext.getEndpoint(config.getResponsesEndpointUri());
     }
-
-    private Endpoint endpoint(final String uri, final String name) {
-        try {
-            return camelContext.getEndpoint(uri);
-        } catch (final IllegalArgumentException e) {
-            throw new ConfigException("endpoint uri " + name + " is invalid: " + uri, e);
-        }
-    }
 }
