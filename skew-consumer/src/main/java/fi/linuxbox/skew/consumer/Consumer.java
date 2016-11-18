@@ -64,6 +64,11 @@ public class Consumer implements Runnable {
             for (;;) {
                 Exchange exchange = requestConsumer.receive();// blocks
 
+                if (stopping && exchange == null) {
+                    log.info("returning from run");
+                    break;
+                }
+
                 log.info("handling exchange: " + exchange);
 
                 Thread.sleep(5000);
