@@ -14,8 +14,77 @@ Furthermore, we're going to deploy this to a cluster of Rasperry Pis, using Resi
 
 :)
 
+## Setting up the demo message broker
 
-## Hardware
+Download ActiveMQ from apache.org.
+Then extract it and start it.
+
+    $ mkdir -p ~/demo
+    $ cd demo
+    $ wget http://archive.apache.org/dist/activemq/5.14.1/apache-activemq-5.14.1-bin.tar.gz
+    $ tar xzvf apache-activemq-5.14.1-bin.tar.gz
+    $ cd apache-activemq-5.14.1/bin
+    $ ./activemq console
+
+Now open the ActiveMQ web console at http://127.0.0.1:8161/admin/ (the credentials are admin:admin).
+
+## Running the app locally
+
+First, clone the source code:
+
+    $ git clone https://github.com/vmj/skew-consumer.git
+    $ cd skew-consumer
+
+You can try the app locally (replace `./gradlew` with `gradlew.bat` if you're on Windows):
+
+    $ ./gradlew installDist
+    $ CONSUMER_REQUESTS_ENDPOINT_URI="stomp:queue:consumer.requests" \
+      CONSUMER_RESPONSES_ENDPOINT_URI="stomp:queue:consumer.responses" \
+      ./skew-consumer-app/build/install/skew-consumer-app/bin/skew-consumer-app
+
+I know its a long name for a script :)
+
+## Sending a message from ActiveMQ console
+
+Now send messages using the ActiveMQ web console.
+The brokerUrl in the stomp component defaults to localhost,
+so the app and ActiveMQ should be talking to each other.
+
+ * With one instance of consumer running, switch to ActiveMQ web console.
+ * Click `Queues` and you should see `consumer.requests` queue listed,
+   with one consumer.
+ * Click the `Send To` link on that row.
+ * Type "Hello" to the `Message body` text area, and click `Send`.
+ * You should now see that there's one message enqueued and one message
+   dequeued.
+ * Refresh the page after a few seconds (the consumer sleeps for a while to imitate work)
+ * You should now see `consumer.responses` queue listed, with one pending message.
+ * Click the queue name (or the `Browse` link), then click the message ID of the message.
+ * You should see the same "Hello" in the message details.
+
+## Running the app in Docker
+
+If you have docker installed, you can, alternatively, run the app in
+docker:
+
+    $ ./gradlew dockerResources
+    $ cd skew-consumer-app/build/docker
+    $ docker build --rm --tag=vmj0/skew-consumer-app:latest .
+
+Note that you will still need to pass those environment variables for
+the app to work.
+
+    $ docker run --rm --read-only \
+      -e CONSUMER_REQUESTS_ENDPOINT_URI="stomp:queue:consumer.requests?brokerURL=tcp://192.168.43.118:61613" \
+      -e CONSUMER_RESPONSES_ENDPOINT_URI="stomp:queue:consumer.responses?brokerURL=tcp://192.168.43.118:61613" \
+      vmj0/skew-consumer-app:latest
+
+Naturally, change the IP to match the ActiveMQ server address.
+
+## Running the app on your Resin app fleet
+
+
+### Hardware
 
 I've got two of the following:
 
@@ -32,13 +101,13 @@ To prepare the SD cards:
   * A linux laptop with SD card reader (needs a microSD adapter)
 
 
-## Sign up to Resin.io
+### Sign up to Resin.io
 
 Sign up or login to resin.io and create a new app.  Then download the
 ResinOS .img for the app, specifying the WiFi SSID and password (if it is
 an open network, just an empty password).
 
-## Preparing the SD card
+### Preparing the SD card
 
 On the laptop, stick the SD card (using the adapter) to the reader.
 
@@ -69,56 +138,13 @@ and `abcdef` is your app hash I guess.
 
 You can now take the card out and do the same with the next card.
 
-## Plug the hardware
+### Plug the hardware
 
 Put the SD cards into the RPi3s and plug the power cords.
 
-Finally, go the the application dashboard and marvel as the devices come up :)
+Finally, go the the resin.io application dashboard and marvel as the devices come up :)
 
-## Setting up the demo server
-
-On the laptop, download ActiveMQ from apache.org.  Then extract it and start it.
-
-    $ mkdir -p ~/demo
-    $ cd demo
-    $ wget http://www.apache.org/.../apache-activemq-5.14.0-bin.tar.gz
-    $ tar zxvf activemq-x.x.x-bin.tar.gz
-    $ cd apache-activemq-x.x.x/bin
-    $ ./activemq console
-
-Now open the ActiveMQ web console at http://127.0.0.1:8161/admin/ (the credentials are admin:admin).
-
-## Running the app locally
-
-First, clone the source code:
-
-    $ git clone https://github.com/vmj/skew-consumer.git
-    $ cd skew-consumer
-
-You can try the app locally (replace `./gradlew` with `gradlew.bat` if you're on Windows):
-
-    $ ./gradlew installDist
-    $ CONSUMER_REQUESTS_ENDPOINT_URI="stomp:queue:consumer.requests" \
-      CONSUMER_RESPONSES_ENDPOINT_URI="stomp:queue:consumer.responses" \
-      ./skew-consumer-app/build/install/skew-consumer-app/bin/skew-consumer-app
-
-I know its a long name for a script :)
-
-Then send messages using the ActiveMQ web console.
-The brokerUrl in the stomp component defaults to localhost,
-so the app and ActiveMQ should be talking to each other.
-
-If you have docker installed, you can, alternatively, run the app in
-docker:
-
-    $ ./gradlew dockerRun
-    # or './gradlew dockerImage' if you want to 'docker run' manually.
-
-Note that you will still need to pass those environment variables for
-the app to work.
-
-
-## Installing the app on your Resin app fleet
+### Installing the app on your Resin app fleet
 
 Build the required Docker resources (Dockerfile and the app distribution).
 
