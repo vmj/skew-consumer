@@ -26,13 +26,13 @@ repositories {
 dependencies {
     runtime project(':skew-consumer')
 
-    compile 'org.apache.openwebbeans:openwebbeans-spi:1.7.0'
-    compile 'org.apache.openwebbeans:openwebbeans-impl:1.7.0'
+    compile 'org.apache.openwebbeans:openwebbeans-spi:1.7.3'
+    compile 'org.apache.openwebbeans:openwebbeans-impl:1.7.3'
 
-    compile 'org.slf4j:slf4j-api:1.7.21'
-    runtime 'ch.qos.logback:logback-classic:1.1.7'
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    runtime 'ch.qos.logback:logback-classic:1.2.3'
 
-    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+    testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
 }
 
 docker {

@@ -17,18 +17,18 @@ dependencies {
     compile 'javax.inject:javax.inject:1'
 
     // Camel
-    compile 'org.apache.camel:camel-core:2.17.3'
-    compile 'org.apache.camel:camel-cdi:2.17.3'
+    compile 'org.apache.camel:camel-core:2.19.0'
+    compile 'org.apache.camel:camel-cdi:2.19.0'
     // Stomp messaging
-    runtime 'org.apache.camel:camel-stomp:2.17.3'
+    runtime 'org.apache.camel:camel-stomp:2.19.0'
 
     // camel-cdi needs javax.annotation.Priority
     compile 'javax.annotation:javax.annotation-api:1.2'
 
     // Logging
-    compile 'org.slf4j:slf4j-api:1.7.21'
+    compile 'org.slf4j:slf4j-api:1.7.25'
 
     // Tests
-    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
-    testRuntime 'ch.qos.logback:logback-classic:1.1.7'
+    testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
+    testRuntime 'ch.qos.logback:logback-classic:1.2.3'
 }
