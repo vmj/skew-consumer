@@ -1,4 +1,4 @@
-package fi.linuxbox.skew.consumer;
+package fi.linuxbox.skew.consumer.annotation;
 
 import java.lang.annotation.*;
 import javax.inject.*;

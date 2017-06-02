@@ -1,8 +1,10 @@
 package fi.linuxbox.skew.consumer;
 
-import fi.linuxbox.skew.consumer.exception.*;
+import fi.linuxbox.skew.consumer.annotation.*;
+
 import javax.enterprise.inject.*;
 import javax.inject.*;
+
 import org.apache.camel.*;
 
 /**

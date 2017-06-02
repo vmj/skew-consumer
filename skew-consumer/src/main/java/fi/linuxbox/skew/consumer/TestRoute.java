@@ -3,6 +3,10 @@ package fi.linuxbox.skew.consumer;
 import javax.enterprise.inject.*;
 import javax.enterprise.util.*;
 import javax.inject.*;
+
+import fi.linuxbox.skew.consumer.annotation.RequestsAnnotation;
+import fi.linuxbox.skew.consumer.annotation.Responses;
+import fi.linuxbox.skew.consumer.annotation.ResponsesAnnotation;
 import org.apache.camel.*;
 import org.apache.camel.builder.*;
 
@@ -23,8 +27,8 @@ public class TestRoute extends RouteBuilder {
             return;
 
         // Programmatic inject.  I don't want to inject the endpoints if this class isn't even enabled.
-        final Endpoint requests = endpoints.select(new AnnotationLiteral<Requests>() {}).get();
-        final Endpoint responses = endpoints.select(new AnnotationLiteral<Responses>() {}).get();
+        final Endpoint requests = endpoints.select(new RequestsAnnotation()).get();
+        final Endpoint responses = endpoints.select(new ResponsesAnnotation()).get();
 
         from("timer://jdkTimer?period=2500")
                 .log(DEBUG, log, "TiMeR", "New request")

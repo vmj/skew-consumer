@@ -2,6 +2,9 @@ package fi.linuxbox.skew.consumer;
 
 import javax.annotation.*;
 import javax.inject.*;
+
+import fi.linuxbox.skew.consumer.annotation.Requests;
+import fi.linuxbox.skew.consumer.annotation.Responses;
 import org.apache.camel.*;
 import org.slf4j.*;
 
